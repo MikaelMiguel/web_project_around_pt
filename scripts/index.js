@@ -18,6 +18,8 @@ let initialCards = [{
     link: 'https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lago.jpg'
   }
 ];
+
+// ─── SELETORES DO PERFIL ───────────────────────────────────────────────────────
 const editButton = document.querySelector(".profile__edit-button");
 const editModal = document.querySelector("#edit-popup");
 const closeButton = editModal.querySelector(".popup__close");
@@ -25,48 +27,118 @@ const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const formElement = editModal.querySelector("#edit-profile-form");
 
-function openModal(editModal) {
-  editModal.classList.add('popup_is-opened');
-};
-function closeModal(editModal) {
-  editModal.classList.remove('popup_is-opened');
-};
+// ─── SELETORES DO NOVO LOCAL ───────────────────────────────────────────────────
+const addButton = document.querySelector(".profile__add-button");     // botão "+"
+const addModal = document.querySelector("#new-card-popup");           // modal "Novo Local" (ID corrigido)
+const addCloseButton = addModal.querySelector(".popup__close");       // botão fechar do modal
+const addFormElement = addModal.querySelector("#new-card-form");      // formulário do modal (ID corrigido)
 
+
+// ─── FUNÇÕES DO MODAL ──────────────────────────────────────────────────────────
+function openModal(modal) {
+  modal.classList.add('popup_is-opened');
+}
+
+function closeModal(modal) {
+  modal.classList.remove('popup_is-opened');
+}
+
+function fillProfileForm() {
+  const currentName = profileTitle.textContent;
+  const currentDescription = profileDescription.textContent;
+  formElement.querySelector('.popup__input_type_name').value = currentName;
+  formElement.querySelector('.popup__input_type_description').value = currentDescription;
+}
+
+function handleOpenEditModal() {
+  fillProfileForm();
+  openModal(editModal);
+}
+
+// ─── MANIPULADOR DO FORMULÁRIO "EDITAR PERFIL" ────────────────────────────────
+function handleProfileFormSubmit(evt) {
+  evt.preventDefault();
+  let nameInput = formElement.querySelector('.popup__input_type_name');
+  let jobInput = formElement.querySelector('.popup__input_type_description');
+  profileTitle.textContent = nameInput.value;
+  profileDescription.textContent = jobInput.value;
+  closeModal(editModal);
+}
+
+// ─── MANIPULADOR DO FORMULÁRIO "NOVO LOCAL" ────────────────────────────────────
+function handleCardFormSubmit(evt) {
+  evt.preventDefault();                                                // impede o reload da página
+
+  const nameInput = addFormElement.querySelector('.popup__input_type_card-name');   // pega o campo nome
+  const linkInput = addFormElement.querySelector('.popup__input_type_url');          // pega o campo link
+
+  renderCard(nameInput.value, linkInput.value, cardsContainer);       // cria e adiciona o cartão
+
+  addFormElement.reset();                                             // limpa o formulário
+  closeModal(addModal);                                               // fecha o modal
+}
+
+
+// ─── EVENTOS DO MODAL "EDITAR PERFIL" ─────────────────────────────────────────
 editButton.addEventListener('click', function() {
-    handleOpenEditModal();
+  handleOpenEditModal();
 });
 
 closeButton.addEventListener('click', function() {
-  closeModal(editModal); // chama a função reutilizável
+  closeModal(editModal);
 });
 
-function fillProfileForm() {
-  // Lê os valores da página
-  const currentName = profileTitle.textContent;
-  const currentDescription = profileDescription.textContent;
-  // Define os valores nos campos do formulário
-  formElement.querySelector('.popup__input_type_name').value = currentName;
-  formElement.querySelector('.popup__input_type_description').value = currentDescription;
-};
+formElement.addEventListener('submit', handleProfileFormSubmit);
 
-function handleOpenEditModal() {
-  fillProfileForm();    // Primeiro: preenche o formulário
-  openModal(editModal); // Segundo: abre o modal
-};
+// ─── EVENTOS DO MODAL "NOVO LOCAL" ────────────────────────────────────────────
+addButton.addEventListener('click', function() {
+  openModal(addModal);                                                // abre o modal ao clicar em "+"
+});
 
-function handleProfileFormSubmit(evt) {
- evt.preventDefault();// Esta linha impede o navegador de enviar o formulário da forma padrão.
-  let nameInput = formElement.querySelector('.popup__input_type_name');
-  let jobInput = formElement.querySelector('.popup__input_type_description');
-  const newName = nameInput.value;
-  const newDescription = jobInput.value;
-  profileTitle.textContent = newName;
-  profileDescription.textContent = newDescription;
-  closeModal(editModal); // chama a função reutilizável
+addCloseButton.addEventListener('click', function() {
+  closeModal(addModal);                                               // fecha o modal
+});
+
+addFormElement.addEventListener('submit', handleCardFormSubmit);     // escuta o submit do formulário
+
+
+// ─── TEMPLATE E CARTÕES ────────────────────────────────────────────────────────
+const cardTemplate = document.querySelector('#card-template');
+const cardsContainer = document.querySelector('.cards__list');
+
+function getCardElement(name = "Lugar sem nome", link = "./images/placeholder.jpg") {
+  const cardElement = cardTemplate.content.cloneNode(true);
+  const cardTitle = cardElement.querySelector('.card__title');
+  const cardImage = cardElement.querySelector('.card__image');
+
+  cardTitle.textContent = name;
+  cardImage.src = link;
+  cardImage.alt = name;
+  const likeButton = cardElement.querySelector('.card__like-button');
+  // Botão de curtir 
+  likeButton.addEventListener('click', function(event) {
+    event.target.classList.toggle('card__like-button_is-active');
+  });
+  // Botão de excluir
+  const deleteButton = cardElement.querySelector('.card__delete-button');
+  deleteButton.addEventListener('click', handleDeleteCard);
+
+  return cardElement;
 }
 
-formElement.addEventListener('submit', handleProfileFormSubmit)
+function renderCard(name, link, container) {
+  const cardElement = getCardElement(name, link);
+  container.prepend(cardElement);
+}
 
+function handleDeleteCard(event) {
+  // Encontra o cartão pai do botão clicado
+  const cardToDelete = event.target.closest('.card');
+  // Remove o cartão do DOM
+  cardToDelete.remove();
+}
+
+// ─── RENDERIZA OS CARTÕES INICIAIS ────────────────────────────────────────────
 initialCards.forEach((item) => {
-    console.log(item.name);
+  renderCard(item.name, item.link, cardsContainer);
 });
