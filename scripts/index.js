@@ -29,10 +29,15 @@ const formElement = editModal.querySelector("#edit-profile-form");
 
 // ─── SELETORES DO NOVO LOCAL ───────────────────────────────────────────────────
 const addButton = document.querySelector(".profile__add-button");     // botão "+"
-const addModal = document.querySelector("#new-card-popup");           // modal "Novo Local" (ID corrigido)
+const addModal = document.querySelector("#new-card-popup");           // modal "Novo Local"
 const addCloseButton = addModal.querySelector(".popup__close");       // botão fechar do modal
-const addFormElement = addModal.querySelector("#new-card-form");      // formulário do modal (ID corrigido)
+const addFormElement = addModal.querySelector("#new-card-form");      // formulário do modal 
 
+// ─── SELETORES DO MODAL DE IMAGEM ───────────────────────────────────────
+const modal = document.querySelector('#image-popup');
+const modalImage = modal.querySelector('.popup__image');
+const modalCaption = modal.querySelector('.popup__caption');
+const modalCloseButton = modal.querySelector('.popup__close');
 
 // ─── FUNÇÕES DO MODAL ──────────────────────────────────────────────────────────
 function openModal(modal) {
@@ -101,6 +106,10 @@ addCloseButton.addEventListener('click', function() {
 
 addFormElement.addEventListener('submit', handleCardFormSubmit);     // escuta o submit do formulário
 
+// ─── EVENTOS DO MODAL DE IMAGEM ─────────────────────────────────────────────
+modalCloseButton.addEventListener('click', () => {
+    closeModal(modal); // botão de fechar do modal de imagem
+});
 
 // ─── TEMPLATE E CARTÕES ────────────────────────────────────────────────────────
 const cardTemplate = document.querySelector('#card-template');
@@ -122,6 +131,14 @@ function getCardElement(name = "Lugar sem nome", link = "./images/placeholder.jp
   // Botão de excluir
   const deleteButton = cardElement.querySelector('.card__delete-button');
   deleteButton.addEventListener('click', handleDeleteCard);
+
+  cardImage.addEventListener('click', () => {
+    modalCaption.textContent = name;
+    modalImage.src = link;
+    modalImage.alt = name;
+  
+    openModal(modal);
+  });
 
   return cardElement;
 }
