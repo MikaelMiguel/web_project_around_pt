@@ -43,7 +43,11 @@ Projeto front-end responsivo que apresenta um perfil interativo e uma galeria de
 7. Clique no card para abrir a imagem em visualização ampliada.
 8. Use os botões de curtir e excluir em cada card.
 
-> O projeto funciona localmente apenas abrindo `index.html` no navegador.
+> **Nota:** O projeto funciona localmente apenas abrindo `index.html` no navegador.
+
+## Link do Projeto
+
+https://mikaelmiguel.github.io/web_project_around_pt/
 
 ## Observações
 
